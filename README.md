@@ -1,0 +1,2 @@
+# srr_timer
+A simple PHP + jQuery tool for control the time you spent on your daily work tasks. It uses SQLite for database, so it's very easy to install and to backup it.  It show you statistics (daily, monthly and yearly) about the time spent on each task. It let to hide unactive tasks. And it has a littel cool tool for ring a chimp (bell) each X minutes or X hours,  so in this way you can force to you to make a pause in your intensive work each once per hour, for example, or simply use it as an alarm.
