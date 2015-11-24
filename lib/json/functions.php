@@ -40,7 +40,7 @@ function f_save_projects_data($a_projects_data){
 				if ( intval($a_projects[$id]['n_total_time']) != intval($a_project['all'])  
 						or trim($a_projects[$id]['title']) != trim($a_project['title'])
 						or intval($a_projects[$id]['n_today_time']) != intval($a_project['today'])  
-						or trim($a_projects[$id]['b_active']) != trim($a_project['b_active'])  
+						or (isset($a_project['b_active']) && trim($a_projects[$id]['b_active']) != trim($a_project['b_active']) ) 
 						) 
 				DB_update('projects',array(array('_id_','=',$id)),array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all']));
 			}else{
