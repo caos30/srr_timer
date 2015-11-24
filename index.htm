@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>.: TIMER :.</title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta http-equiv="pragma" content="no-cache" />
+<meta name="revisit-after" content="7 days" />
+
+<link rel="SHORTCUT ICON" href="lib/images/favicon_on.ico" />
+<link href="lib/images/styles.css" rel="stylesheet" type="text/css" />
+<link href="lib/images/font-awesome-4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"  />
+
+<script type='text/javascript' src='lib/js/jquery-1.9.1.min.js'></script>
+<script type='text/javascript' src='lib/js/timer.js'></script>
+
+</head>
+<body>&nbsp;
+    
+<!-- +++++++++++++++++++ MAIN LAYOUT +++++++++++++++++++ -->
+
+<div id="div_wrapper">
+	<div id="div_main"><div>
+		<h3 class="TEXT" rel="HEADER_TITLE"></h3>
+		<table cellpadding="4" cellspacing="0" width="100%" id="tb_projects" border="0">
+		<thead>
+			<tr>
+				<td style="border:none;" colspan="2"><span id="current_date"></span></td>
+				<td style="width:60px;" class="a_c TEXT" rel="TODAY"></td>
+				<td style="width:60px;" class="a_c TEXT" rel="ALL">
+					<a href='#' onclick='js_stats_button("0");return false;'><i class='fa fa-area-chart'></i></a>
+				</td>
+				<td style="width:60px;" class="a_c TEXT" rel="DAYS"></td>
+			</tr>
+			<tr>
+				<td class='a_b n_w' colspan="2">
+                                    <a href="#" onclick="javascript:js_show_settings();"><i class='fa fa-gear'></i> <span class="TEXT" rel="SETTINGS"></span></a>
+                                    <a href="#" onclick="javascript:js_add_button();"><i class='fa fa-plus-square'></i> <span class="TEXT" rel="NEW_TASK"></span></a>
+                                </td>
+				<td><span class="time" id="v_today_tot">00:00:00</span></td>
+				<td><span class="time" id="v_all_tot">00:00:00</span></td>
+				<td><span class="time" id="n_times_tot"></span></td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+		</table>
+	</div></div>
+	<div id="div_debug"><img src='lib/images/net1.gif' /><span></span><br /><input type='text' style='display:none;width:100%;border:none;' id='txt_debug' value='' /></div>
+	<div id="div_chime" style="display:block;">
+		<span class="TEXT" rel="REPEAT_CHIME"></span> <input id='chime_period' type='text' style='text-align:right;width:2.5em;' value='1' /> 
+		<select id='chime_unit'>
+                    <option value='1' class="TEXT" rel="MINUTES"></option>
+                    <option value='60' selected='selected' class="TEXT" rel="HOURS"></option>
+                </select>
+		<button id='chime_start'><i class='fa fa-play'></i> <span class="TEXT" rel="START"></span></button>
+		<button id='chime_stop' style='display:none;'><i class='fa fa-stop'></i> <span class="TEXT" rel="STOP"></span></button>
+		&nbsp; <span id='chime_next'></span>
+	</div>
+	
+</div>
+
+
+<!-- +++++++++++++++++++ MODAL POPUPS +++++++++++++++++++ -->
+
+<div id="div_settings" class='modal' rel="">
+        <div class="top_bar"><a href="#" class="close"><i class='fa fa-close'></i></a></div>
+	<p class="TEXT" rel="WHAT_PROJECTS"></p>
+        <div class='show_control' style="padding:1em 3em;" rel=''>
+            <p><a href='#' rel='active'><i class='fa fa-fw fa-check-square-o'></i> <span class="TEXT" rel="ONLY_ACTIVE"></span></a></p>
+            <p><a href='#' rel='unactive'><i class='fa fa-fw fa-check-square-o'></i> <span class="TEXT" rel="ONLY_UNACTIVE"></span></a></p>
+            <p><a href='#' rel='all'><i class='fa fa-fw fa-check-square-o'></i> <span class="TEXT" rel="ALL_PROJECTS"></span></a></p>
+        </div>
+	<p class="TEXT" rel="INTERFACE_LANGUAGE"></p>
+        <div id="div_languages" style="padding:1em 3em;"></div>
+	<a href="#" class='bt'><i class='fa fa-save'></i> <span class="TEXT" rel="SAVE_BT"></span></a>
+</div>
+
+<div id="div_add" class='modal' rel="">
+        <div class="top_bar"><a href="#" onclick="$(this).parent().parent().hide();return false;" class="close"><i class='fa fa-close'></i></a></div>
+	<p class="TEXT" rel="TASK_NAME"></p>
+	<input type="text" id="f_new_project_name" class="TEXTv" rel="WRITE_TASK_NAME" value="" onkeyup="javascript:if(getKeyCode(event)==13) $(this).parent().find('a.bt').click();" /> 
+	<a href="#" class='bt'><i class='fa fa-save'></i> <span class="TEXT" rel="SAVE_BT"></span></a>
+</div>
+
+<div id="div_edit" class='modal' rel="">
+	<div class="top_bar"><a href="#" class="close"><i class='fa fa-close'></i></a></div>
+	<p class="TEXT" rel="TASK_NAME"></p>
+        <p class='n_w'>
+            <input type="text" id="f_project_name" value="" onkeyup="javascript:if(getKeyCode(event)==13) $(this).parent().find('a.bt').click();" /> 
+            <a href="#" class='bt'><i class='fa fa-save'></i> <span class="TEXT" rel="SAVE_BT"></span></a>
+        </p>
+        <p><a href='#' id='b_active' rel='1'><i class='fa fa-fw fa-check-square-o'></i> <span class="TEXT" rel="ACTIVE_TASK"></span></a></p>
+</div>
+
+<div id="div_delete" class='modal' rel="">
+	<div class="top_bar"><a href="#" class="close"><i class='fa fa-close'></i></a></div>
+        <p><span class="TEXT" rel="TASK"></span>: <b><span rel='title'></span></b></p>
+        <br />
+        <p class="TEXT" rel="DELETE_CONFIRM_1"></p>
+        <p class="TEXT" rel="DELETE_CONFIRM_2"></p>
+        <p class='a_c'><br />
+	<a href="#" class='bt' rel='delete'><i class='fa fa-trash'></i> <span class="TEXT" rel="YES_DELETE"></span></a> &nbsp; &nbsp;
+	<a href="#" class='bt' rel='cancel'><i class='fa fa-undo'></i> <span class="TEXT" rel="NO_CANCEL"></span></a>
+        </p>
+</div>
+
+<div id="div_merge" class='modal' rel="">
+	<div class="top_bar"><a href="#" class="close"><i class='fa fa-close'></i></a></div>
+	<p class="TEXT" rel="JOIN_DESC_1"></p>
+        <p><br /><b><span id="v_task_name_to_merge"></span></b><br /><br /> <span class="TEXT" rel="JOIN_DESC_2"></span></p>
+	<select><option value="" class="TEXT" rel="_SELECT_"></option></select>
+	<a href="#" class='bt'><i class='fa fa-save'></i> <span class="TEXT" rel="JOIN_BT"></span></a>
+	<br /><br />
+	<p><b><span class="TEXT" rel="NOTE"></span></b> <span class="TEXT" rel="JOIN_NOTE"></span></p>
+</div>
+
+<div id="div_stats" class='modal' rel="">
+	<div class="top_bar"><a href="#" class="close"><i class='fa fa-close'></i></a></div> 
+	<p><span class="TEXT" rel="TASK_NAME"></span>: <span id="v_statistics_task_name" style="font-weight:bold;"></span></p>
+	<div id="div_stats_menu">
+            <a href="#" rel="days" class="bt"><i class="fa fa-calendar"></i> <span class="TEXT" rel="DAYS"></span></a> 
+            <a href="#" rel="months" class="bt"><i class="fa fa-calendar-check-o"></i> <span class="TEXT" rel="MONTHS"></span></a> 
+            <a href="#" rel="years" class="bt"><i class="fa fa-calendar-o"></i> <span class="TEXT" rel="YEARS"></span></a> 
+	</div>
+	<div id="div_stats_list"></div>
+</div>
+
+
+</body>
+</html>
