@@ -139,8 +139,8 @@ html, body {
     {color:#ADA!important;}
     #tb_projects tr.today td a[rel=stop]
     {color:#C00!important;}
-    #tb_projects tr.today td a[rel=start],
-    #tb_projects tr.today td a[rel=stop]
+    #tb_projects tr td a[rel=start],
+    #tb_projects tr td a[rel=stop]
     {display:inline-block;min-width:3em!important;}
     
 #div_debug, #div_chime{color:#fff;background-color:#600;margin:30px;padding:11px;text-align:center;vertical-align:middle;display:none;border-radius:3px;}
