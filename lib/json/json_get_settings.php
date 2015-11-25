@@ -8,6 +8,7 @@
     $settings = DB_get_first_record('config');
 
     $settings['languages'] = f_get_language_list();
+    $settings['app_version'] = file_get_contents('../../version.txt');
 
     return array('settings'=>$settings);
 

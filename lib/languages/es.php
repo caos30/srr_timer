@@ -55,6 +55,7 @@ $texts = array(
     'JOIN_NOTE' => "después de la unión, ¡la primera tarea será eliminada!",
     'INTERFACE_LANGUAGE' => "Idioma para la interfaz:",
     'STOP_TIMER' => "Detenga el contador antes de acceder a Configuración.",
+    'CURRENT_VERSION' => "Versión actual:",
 );
 
 ?>

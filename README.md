@@ -70,7 +70,6 @@ I developed this tool because i didn't find any other tool like it: simple, easy
 
 But i have a list of pending features to implement, so you're welcome ;)
 
-- add version number visible in the interface (probably in the "settings" dialog)
 - add to the configuration dialog a way to adjust the hours that define a new day (now by default is setted to 05:00am)
 - multi-user and login system
 - add a way to edit the times on other days than today. It can be done only accessing to the database.
@@ -134,5 +133,6 @@ As developers & translators:
 == 2.2 [???]
 
  - moved the sqlite database to the folder /data for make easier the updating of the app without affect the 'local data'
+ - added the number of version at the 'settings' dialog, which it's stored at /version.txt file by developers
 
 More details at: https://github.com/caos30/srr_timer/commits/master

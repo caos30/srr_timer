@@ -55,7 +55,7 @@ $texts = array(
     'JOIN_NOTE' => "after be merged, the task will be deleted!",
     'INTERFACE_LANGUAGE' => "Language for the interface:",
     'STOP_TIMER' => "Stop the timer before access to Settings.",
-    '' => "",
+    'CURRENT_VERSION' => "Current version:",
 );
 
 ?>
