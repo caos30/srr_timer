@@ -70,8 +70,9 @@ I developed this tool because i didn't find any other tool like it: simple, easy
 
 But i have a list of pending features to implement, so you're welcome ;)
 
+- add version number visible in the interface (probably in the "settings" dialog)
 - add to the configuration dialog a way to adjust the hours that define a new day (now by default is setted to 05:00am)
-- login system (maybe multi-user???)
+- multi-user and login system
 - add a way to edit the times on other days than today. It can be done only accessing to the database.
 - a new HTML design really RESPONSIVE ;)
 - more graphs? for example: graph suming all hours by day of all tasks
@@ -79,6 +80,13 @@ But i have a list of pending features to implement, so you're welcome ;)
 - automatic saving on server each minute (actually it only save task progress when you click on "stop" !)
 - once i have a FireFox OS phone, i would like to make a FireFox OS app from it :)
 - more interface/style options (themes?)
+- ability to color code each task (tagging)
+- pie charts at the stats dialog? 
+- ability to create subprojects
+- send some kind of report by email?
+- export to csv 
+- when adding a new task offer list of common tasks (sport,self-care, sleep, transport, work, eat, read, shopping, entertainment, housework, cinema, walk, study, internet, drink, party, etc...)
+
 
 ## License
 
