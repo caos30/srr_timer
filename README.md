@@ -32,7 +32,7 @@ The server need to have the SQLite PDO installed (it's usually installed by defa
 
 - this project use my own class_aSQLite.php (i'm close to upload it on GitHub) class for manage SQLite
 - you can edit raw SQLite database donlowading it using FTP
-- but you can edit it using this URL /data/admin which use the same class_aSQLite.php library (recommended)
+- but you can edit it using this URL /lib/db/admin which use the same class_aSQLite.php library (recommended)
 - the default login credentials to access this panel are the typical: admin/1234, so you should cahnge it at /data/admin/admin.php using FTP
 - you shouldn't need to have raw access to the database... and it's not recommended to do it, but if you decide to work on this project as developer you will need it ;)
 
@@ -130,5 +130,9 @@ As developers & translators:
  - on the stats popup of a task added the button "years"
  - added a new feature for tasks: active/unactive, for don't show at task list the not active tasks
  - uploaded to GitHub :)
+
+== 2.2 [???]
+
+ - moved the sqlite database to the folder /data for make easier the updating of the app without affect the 'local data'
 
 More details at: https://github.com/caos30/srr_timer/commits/master

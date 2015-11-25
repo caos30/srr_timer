@@ -12,7 +12,7 @@
     $config['passwd'] = '1234';
     $config['page_title'] = 'PHP aSQLite - opensource license';
     $config['default_records_per_page'] = 50;
-    $config['db_path'] = '../';
+    $config['db_path'] = '../../../data';
     $config['db_filename'] = 'timer.sqlite';
     $config['cookie_ctime_def'] = time()+1.5*24*60*60; // 1.5 days 
 //  = = = = =  end :: C O N F I G   = = = =  

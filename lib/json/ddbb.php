@@ -2,8 +2,8 @@
 <?php 
 
 function DB_get_first_record($tabla,$where=array()){ 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data','db_filename'=>'timer.sqlite'));
         return $database->FIRST_RECORD($tabla);
 }
 
@@ -84,13 +84,9 @@ function DB_sort_array($arr,$k_order,$order='ASC',$limit_ini='',$limit_fin=''){ 
 
 function DB_select($table,$where=array(),$k='_id_'){	// connection with the database 
         // connection with the database 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
         
-            //$database->trim_all_values('config');
-            //$database->trim_all_values('projects');
-            //$database->trim_all_values('times');
-         
 	// operations 
 	$cons = $database->GET_RECORDS_TABLE(trim($table),$where); 
 	$ret = array();
@@ -113,8 +109,8 @@ function DB_select($table,$where=array(),$k='_id_'){	// connection with the data
 
 function DB_search($table,$find=array(),$k='_id_'){	// connection with the database 
         // connection with the database 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
 	// operations 
 	$cons = $database->SEARCH_RECORDS_TABLE(trim($table),$find);  
 	$ret = array();
@@ -137,8 +133,8 @@ function DB_search($table,$find=array(),$k='_id_'){	// connection with the datab
 
 function DB_update($table,$where_a=array(),$valores_a=array()){	// connection with the database 
         // connection with the database 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
 	// operations 
 	$ret = $database->UPDATE_RECORD(trim($table),$where_a,$valores_a);   
 	$database->CLOSE();
@@ -148,8 +144,8 @@ function DB_update($table,$where_a=array(),$valores_a=array()){	// connection wi
 
 function DB_insert($table,$valores_a=array()){	// connection with the database 
         // connection with the database 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
 	// operations 
 	$id = $database->INSERT_RECORD(trim($table),$valores_a);   
 	$database->CLOSE();
@@ -160,8 +156,8 @@ function DB_insert($table,$valores_a=array()){	// connection with the database
 function DB_insert_multiple($table,$valores_a){
 	// connection with the database 
         // connection with the database 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
 	// operations 
 	if (count($valores_a)>0 and is_array($valores_a)){
 		foreach ($valores_a as $valores_aa)
@@ -174,8 +170,8 @@ function DB_insert_multiple($table,$valores_a){
 
 function DB_delete($table,$where_a=array()){	// connection with the database 
         // connection with the database 
-	include_once ('../../data/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_filename'=>'timer.sqlite'));
+	include_once ('../db/class_aSQLite.php'); 
+        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
 	// operations 
 	$cons = $database->DELETE_RECORD(trim($table),$where_a);   
 	$database->CLOSE();
