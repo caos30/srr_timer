@@ -4,14 +4,12 @@
     if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) return array('ok'=>'0');
 
 // == process data
-
-    // == sum for all projects ;) 
-        $a_projects = DB_select('projects',array(),'_id_');
-        if (count($a_projects)>0){
-                //foreach ($a_projects as )
-        }
-
+    // == check if there are change of day
+        if (isset($_GET['first_load']) && $_GET['first_load']=='1')
+            f_check_change_of_day();
+    
     // == clean "null" fields
+        $a_projects = DB_select('projects',array(),'_id_');
         if (count($a_projects)>0){
                 foreach ($a_projects as $ip=>$arr){
                     foreach ($arr as $f=>$v){
