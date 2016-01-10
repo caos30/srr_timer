@@ -16,7 +16,7 @@
     $data = f_explode($data);
 
     if (!empty($data['show'])){
-        $cons = DB_update('config',array('_id_'=>$data['_id_']),$data);
+        $cons = DB_update_by_ID(array('t'=>'config', 'id'=>$data['_id_'], 'v'=>$data));
         $ret = array('ok'=>'1','cons'=>$cons,'data'=>$data);
     }else{
         $ret = array('ok'=>'0','data'=>$data);

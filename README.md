@@ -134,5 +134,6 @@ As developers & translators:
 
  - moved the sqlite database to the folder /data for make easier the updating of the app without affect the 'local data'
  - added the number of version at the 'settings' dialog, which it's stored at /version.txt file by developers
+ - refactoring of the database layer
 
 More details at: https://github.com/caos30/srr_timer/commits/master

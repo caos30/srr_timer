@@ -2,7 +2,15 @@
 
 ini_set('display_errors', 'On'); error_reporting(E_ALL);
 
-include_once("functions.php");
+ // = this $config_backend is for backend issues, meanwhile the array $config is for the frontend UI ;)
+    global $config_backend;
+    $config_backend = array(
+                    'path' => dirname(__FILE__).'/../../',
+                    );
+    
+include_once ('../db/class_aSQLite.php');
+include_once ('ddbb.php');
+include_once ('functions.php');
 
 $json_scripts = f_get_json_scripts();
 

@@ -1,11 +1,59 @@
-<?php /**/ ?>
 <?php 
 
-function DB_get_first_record($tabla,$where=array()){ 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data','db_filename'=>'timer.sqlite'));
-        return $database->FIRST_RECORD($tabla);
+/*
+ * internal function for this PHP file, to put in clear which is the location of the database, depending on the incoming data at $vars
+ */
+function _DB_fill_db($vars){
+    global $config_backend;
+    if (!isset($vars['db'])) 
+        $vars['db'] = array();
+    if (empty($vars['db']['db_filename']))
+        $vars['db']['db_filename'] = 'timer.sqlite';
+    if (empty($vars['db']['db_path']))
+        $vars['db']['db_path'] = $config_backend['path'].'data';
+    return $vars;
 }
+
+/*
+ * required params: t (table String)
+ * optional params: w (where Array), o (order field String), o2 (order direction String), 
+ *                  l1 (first record Integer), l2 (last record Integer), k (field for associative array String)
+ */
+function DB_select($vars){
+        if (empty($vars['t'])) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+	$ret = $db->SELECT($vars); 
+	$db->CLOSE();
+        return $ret;
+}
+
+/*
+ * required params: t (table String)
+ * optional params: o (order field String), o2 (order direction String), w (where Array),
+ *                  nn (NotNull: true, include this param if you want to get an empty record if ID doesn't exist at this table) 
+ */
+function DB_get_first_record($vars){ 
+        if (empty($vars['t'])) return false;
+        $vars = _DB_fill_db($vars); 
+        $db = new class_aSQLite($vars['db']);
+        $vars['l1'] = 1;
+        $vars['l2'] = 1;
+        $vars['k'] = '';
+        $vars['o'] = empty($vars['o']) ? '_id_' : $vars['o'];
+        $vars['o2'] = empty($vars['o2']) ? 'ASC' : $vars['o2'];
+	$cons = $db->SELECT($vars); 
+	$db->CLOSE();
+	unset($db);
+	if (is_array($cons) and count($cons)>0)
+            $ret = $cons[0]; 
+        else if (isset($vars['nn']) && $vars['nn']===true)
+            $ret = DB_get_empty_record($vars);
+        else
+            $ret = array();
+        return $ret;
+}
+
 
 function DB_sort_array($arr,$k_order,$order='ASC',$limit_ini='',$limit_fin=''){ // permite ordenar según varios campos: $k_order='apellido nombre'
 	$ret = array();
@@ -82,104 +130,83 @@ function DB_sort_array($arr,$k_order,$order='ASC',$limit_ini='',$limit_fin=''){ 
 	return $ret;
 }
 
-function DB_select($table,$where=array(),$k='_id_'){	// connection with the database 
-        // connection with the database 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
-        
-	// operations 
-	$cons = $database->GET_RECORDS_TABLE(trim($table),$where); 
-	$ret = array();
-	if (count($cons)>0 and is_array($cons)){
-		 foreach ($cons as $ele){
-		 	if ($k=='_id_'){
-		 		$ret[$ele['_id_']] = $ele;
-		 	}else if ($k==''){
-		 		$ret[] = $ele;
-		 	}else if (isset($ele[$k])){
-		 		$kk = $ele[$k];
-		 		$ret[$kk] = $ele;
-		 	}
-		 }
-	}
-	$database->CLOSE();
-	unset($database); 
-	return $ret;
+/*
+ * required params: t (table String), V (values Array)
+ * optional params: w (where Array)
+ */
+function DB_update($vars){
+        if (empty($vars['t']) || empty($vars['v'])) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+	$ret = $db->UPDATE($vars); 
+	$db->CLOSE();
+        return $ret;
 }
 
-function DB_search($table,$find=array(),$k='_id_'){	// connection with the database 
-        // connection with the database 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
-	// operations 
-	$cons = $database->SEARCH_RECORDS_TABLE(trim($table),$find);  
-	$ret = array();
-	if (count($cons)>0 and is_array($cons)){
-		 foreach ($cons as $ele){
-		 	if ($k=='_id_'){
-		 		$ret[$ele['_id_']] = $ele;
-		 	}else if ($k==''){
-		 		$ret[] = $ele;
-		 	}else if (isset($ele[$k])){
-		 		$kk = $ele[$k];
-		 		$ret[$kk] = $ele;
-		 	}
-		 }
-	}
-	$database->CLOSE();
-	unset($database); 
-	return $ret;
+/*
+ * required params: t (table String), v (values Array), id (integer)
+ */
+function DB_update_by_ID($vars){
+        if (empty($vars['t']) || empty($vars['v']) || !isset($vars['id'])) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+        if ($vars['id'] === 0) {
+            $ret = $db->INSERT($vars); 
+        }else{
+            $vars['w'] = array('_id_'=>$vars['id']);
+            $ret = $db->UPDATE($vars); 
+        }
+	$db->CLOSE();
+        return $ret;
 }
 
-function DB_update($table,$where_a=array(),$valores_a=array()){	// connection with the database 
-        // connection with the database 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
-	// operations 
-	$ret = $database->UPDATE_RECORD(trim($table),$where_a,$valores_a);   
-	$database->CLOSE();
-	unset($database); 
-	return $ret;
+/*
+ * required params: t (table String), v (values Array), id (integer)
+ */
+function DB_insert($vars){
+        if (empty($vars['t']) || empty($vars['v'])) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+        $ret = $db->INSERT($vars); 
+	$db->CLOSE();
+        return $ret;
 }
 
-function DB_insert($table,$valores_a=array()){	// connection with the database 
-        // connection with the database 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
-	// operations 
-	$id = $database->INSERT_RECORD(trim($table),$valores_a);   
-	$database->CLOSE();
-	unset($database); 
-	return $id;  
+/*
+ * required params: t (table String), v (array, each one must contain a valid DB_INSERT $vars['v'])
+ */
+function DB_multiple_insert($vars){
+        if (empty($vars['v']) || !is_array($vars['v']) || count($vars['v'])==0
+                || empty($vars['t']) ) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+	$ret = $db->MULTIPLE_INSERT($vars); 
+	$db->CLOSE();
+        return $ret;
 }
 
-function DB_insert_multiple($table,$valores_a){
-	// connection with the database 
-        // connection with the database 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
-	// operations 
-	if (count($valores_a)>0 and is_array($valores_a)){
-		foreach ($valores_a as $valores_aa)
-			$cons = $database->INSERT_RECORD(trim($table),$valores_aa); 
-	}  
-	$database->CLOSE();
-	unset($database); 
-	return $ret;
+/*
+ * required params: t (table String), w (where Array)
+ */
+function DB_delete($vars){
+        if (empty($vars['t']) || empty($vars['w'])) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+        $ret = $db->DELETE($vars); 
+	$db->CLOSE();
+        return $ret;
 }
 
-function DB_delete($table,$where_a=array()){	// connection with the database 
-        // connection with the database 
-	include_once ('../db/class_aSQLite.php'); 
-        $database = new class_aSQLite(array('db_path'=>'../../data', 'db_filename'=>'timer.sqlite'));
-	// operations 
-	$cons = $database->DELETE_RECORD(trim($table),$where_a);   
-	$database->CLOSE();
-	unset($database); 
-	return $cons;
+/*
+ * required params: t (table String), id (integer > 0)
+ */
+function DB_delete_by_ID($vars){
+        if (empty($vars['t']) || empty($vars['id']) || intval($vars['id']) === 0) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+        $ret = $db->DELETE_BY_ID($vars); 
+	$db->CLOSE();
+        return $ret;
 }
-
-
-
 
 ?>

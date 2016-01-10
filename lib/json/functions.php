@@ -1,11 +1,10 @@
-<?php /**/ ?>
 <?php
 
-require_once('ddbb.php');
 global $config;
 
-$config = DB_get_first_record('config');
+$config = DB_get_first_record(array('t'=>'config'));
 f_get_language_list();
+
 function f_get_language_list(){
     $scan = scandir('../languages');
     $languages = array();
@@ -27,7 +26,7 @@ function f_get_json_scripts(){
 
 function f_save_projects_data($a_projects_data){
 	global $config;
-	$a_projects = DB_select('projects',array(),'_id_');
+	$a_projects = DB_select(array('t'=>'projects'));
 	// check if it's necesary to update the data about an existing project in the database 
 	$b_exists_times_changes = 0; 
 	$b_exists_name_changes = 0; 
@@ -42,10 +41,10 @@ function f_save_projects_data($a_projects_data){
 						or intval($a_projects[$id]['n_today_time']) != intval($a_project['today'])  
 						or (isset($a_project['b_active']) && trim($a_projects[$id]['b_active']) != trim($a_project['b_active']) ) 
 						) 
-				DB_update('projects',array(array('_id_','=',$id)),array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all']));
+                                DB_update_by_ID(array('t'=>'projects', 'id'=>$id, 'v'=>array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all'])));
 			}else{
-				DB_insert('projects',array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all'],
-										'n_times'=>0,'d_first'=>date('Ymd'),'d_last'=>date('Ymd'),'t_creation'=>time()));
+				DB_insert(array('t'=>'projects','v'=>array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all'],
+										'n_times'=>0,'d_first'=>date('Ymd'),'d_last'=>date('Ymd'),'t_creation'=>time())));
 			}
 		
 		}
@@ -65,13 +64,22 @@ function f_check_change_of_day(){
 		// check if there are change of day
 		if (is_null($config['today']) || empty($config['today'])){	
                     $config['today'] = $today; 
-                    DB_update('config',array(),array('today'=>$today));
+                    DB_update(array('t'=>'config', 'v'=>array('today'=>$today)));
                 }else if ($config['today']!=$today){	
                     $b_updated_today_times =  f_pass_today_time_to_times_table();
                     $config['today'] = $today; 
-                    DB_update('config',array(),array('today'=>$today));
+                    DB_update(array('t'=>'config', 'v'=>array('today'=>$today)));
 		}
 	return $b_updated_today_times;
+}
+
+function f_sum_total_times(){
+        global $config;
+        $a_projects_count = DB_select(array('t'=>'times','g'=>'id_project','f'=>'id_project, count(_id_) as n_times, sum(n_time) as n_total_time'));
+        if (is_array($a_projects_count) && count($a_projects_count)>0){
+            foreach ($a_projects_count as $arr)
+                DB_update_by_ID (array('t'=>'projects','id'=>$arr['id_project'],'v'=>array('n_times'=>$arr['n_times'], 'n_total_time'=>$arr['n_total_time'])));
+        }
 }
 
 function f_getToday($formatted=false){
@@ -96,7 +104,7 @@ function f_getToday($formatted=false){
 
 function f_pass_today_time_to_times_table(){
 	global $config;
-	$a_projects = DB_select('projects',array(),'_id_');
+	$a_projects = DB_select(array('t'=>'projects'));
 	$b_exists_changes = 0;
 	$Ymd = $config['today']; // YYYYmmdd
 	$t_today = mktime(1,1,1,substr($Ymd,4,2),substr($Ymd,-2),substr($Ymd,0,4));
@@ -104,10 +112,10 @@ function f_pass_today_time_to_times_table(){
 	if (count($a_projects)>0){
 		foreach($a_projects as $id=>$a_project){
 			if (intval($a_project['n_today_time'])>0){
-				DB_insert('times',array('id_project'=>$id,'d_yyyymmdd'=>$Ymd,'n_week_day'=>$wday,'n_time'=>intval($a_project['n_today_time'])));
+				DB_insert(array('t'=>'times', 'v'=>array('id_project'=>$id,'d_yyyymmdd'=>$Ymd,'n_week_day'=>$wday,'n_time'=>intval($a_project['n_today_time']))));
 				$n_total_time = intval($a_project['n_total_time']) + intval($a_project['n_today_time']); 
 				$n_times = intval($a_project['n_times'])+1;
-				DB_update('projects',array(array('_id_','=',$id)),array('n_today_time'=>0,'n_total_time'=>$n_total_time,'n_times'=>$n_times,'d_last'=>$Ymd));
+				DB_update_by_ID(array('t'=>'projects', 'id'=>$id, 'v'=>array('n_today_time'=>0,'n_total_time'=>$n_total_time,'n_times'=>$n_times,'d_last'=>$Ymd)));
 				$b_exists_changes = 1; 
 			} 
 		}
@@ -117,14 +125,14 @@ function f_pass_today_time_to_times_table(){
 
 function f_set_project_name($id,$title){
 	if (trim($title)!="" and intval($id)>0){
-		DB_update('projects',array(array('_id_','=',$id)),array('title'=>$title));
+            DB_update_by_ID(array('t'=>'projects', 'id'=>$id, 'v'=>array('title'=>$title)));
 	}
 	return;
 }
 
 function f_add_project($title){
 	if (trim($title)!=""){
-            return DB_insert('projects',array(  'title'=>$title,
+            return DB_insert(array('t'=>'projects', 'v'=>array(  'title'=>$title,
                                                 'b_active'=>'1',
                                                 'n_today_time'=>'0',
                                                 'n_total_time'=>'0',
@@ -132,7 +140,7 @@ function f_add_project($title){
                                                 'd_first'=>date('Ymd'),
                                                 'd_last'=>date('Ymd'),
                                                 't_creation'=>time())
-                    );
+                    ));
 	}
 	return 0;
 }
@@ -152,7 +160,7 @@ function f_get_times_project($id){
 	$a_project['months'] = array();
 	$a_project['years'] = array();
 	$last_time = 0;
-	$a_times = DB_select('times',array(array('id_project','=',$id))); 
+	$a_times = DB_select(array('t'=>'times', 'w'=>array(array('id_project','=',$id)))); 
 	if (count($a_times)>0 and is_array($a_times)){
 		foreach ($a_times as $time){ 			
 			$monthk = substr($time['d_yyyymmdd'],0,6);
