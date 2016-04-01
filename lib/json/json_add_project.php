@@ -5,7 +5,7 @@
 
 // == process data
 
-    $title = urldecode(base64_decode($_GET['title']));
+    $title = $_REQUEST['title'];
 
     $id = f_add_project($title);
 

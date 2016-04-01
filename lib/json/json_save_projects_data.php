@@ -4,12 +4,8 @@
     if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) return array('ok'=>'0');
 
 // == process data
-    $data = base64_decode($_GET['data']);
-    // this is a temporal 'patch' because the javascript encode64 function doesn't match exactly with the decode64 function ¿?  
-    $data = str_replace("%5B%3A%5D","[:]",$data);
-    $data = str_replace("%5B%7C%5D","[|]",$data);
-    $data = str_replace("%5B%3C%3E%5D","[<>]",$data);
-
+    
+    $data = $_REQUEST['data'];
     // 	_id_ [:] 5 [|] title [:] st.com. [|]  b_active [:] 0 [|] today [:] 27 [|] all [:] 1233062 [<>] _id_ [:] 6 [|] title [:] ww.co.uk [|] today [:] 0 [|] all [:] 133954   
 
     $a_projects_data = array();

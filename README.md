@@ -130,10 +130,11 @@ As developers & translators:
  - added a new feature for tasks: active/unactive, for don't show at task list the not active tasks
  - uploaded to GitHub :)
 
-== 2.2 [???]
+== 2.2 [01-04-2016]
 
  - moved the sqlite database to the folder /data for make easier the updating of the app without affect the 'local data'
  - added the number of version at the 'settings' dialog, which it's stored at /version.txt file by developers
  - refactoring of the database layer
+ - fixed an error when title of task contain a latin character
 
 More details at: https://github.com/caos30/srr_timer/commits/master
