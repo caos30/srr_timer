@@ -36,14 +36,13 @@ function f_save_projects_data($a_projects_data){
 			if (isset($a_projects[$id])){
 				// the project exists after and before 
 				// (the most of the times! 99.99999%)
-				if ( intval($a_projects[$id]['n_total_time']) != intval($a_project['all'])  
-						or trim($a_projects[$id]['title']) != trim($a_project['title'])
+				if ( trim($a_projects[$id]['title']) != trim($a_project['title'])
 						or intval($a_projects[$id]['n_today_time']) != intval($a_project['today'])  
 						or (isset($a_project['b_active']) && trim($a_projects[$id]['b_active']) != trim($a_project['b_active']) ) 
 						) 
-                                DB_update_by_ID(array('t'=>'projects', 'id'=>$id, 'v'=>array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all'])));
+                                DB_update_by_ID(array('t'=>'projects', 'id'=>$id, 'v'=>array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'])));
 			}else{
-				DB_insert(array('t'=>'projects','v'=>array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],'n_total_time'=>$a_project['all'],
+				DB_insert(array('t'=>'projects','v'=>array('title'=>$a_project['title'],'b_active'=>$a_project['b_active'],'n_today_time'=>$a_project['today'],
 										'n_times'=>0,'d_first'=>date('Ymd'),'d_last'=>date('Ymd'),'t_creation'=>time())));
 			}
 		
@@ -146,6 +145,7 @@ function f_add_project($title){
 }
 
 function f_get_times_project($id){
+        global $config;
 	$a_project = array();
 	$a_project['_id_'] = $id; 
 	$a_project['today_time'] = 0;
@@ -161,6 +161,14 @@ function f_get_times_project($id){
 	$a_project['years'] = array();
 	$last_time = 0;
 	$a_times = DB_select(array('t'=>'times', 'w'=>array(array('id_project','=',$id)), 'o'=>'d_yyyymmdd')); 
+        // = add today times if there exists
+            $project = DB_get_first_record(array('t'=>'projects', 'w'=>array(array('_id_','=',$id))));
+            if (!empty($project['n_today_time'])){
+                $Ymd = $config['today']; // YYYYmmdd
+                $t_today = mktime(1,1,1,substr($Ymd,4,2),substr($Ymd,-2),substr($Ymd,0,4));
+                $wday = date('N',$t_today);
+                $a_times[] = array('d_yyyymmdd'=>$Ymd, 'n_week_day'=>$wday, 'n_time'=>$project['n_today_time']);
+            }
 	if (count($a_times)>0 and is_array($a_times)){
 		foreach ($a_times as $time){ 			
 			$monthk = substr($time['d_yyyymmdd'],0,6);

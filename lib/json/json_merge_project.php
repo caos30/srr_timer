@@ -6,7 +6,8 @@
 // == process data
 
     if (isset($_GET['id_project_from']) && intval($_GET['id_project_from'])>0
-            && isset($_GET['id_project_to']) && intval($_GET['id_project_to'])>0){
+            && isset($_GET['id_project_to']) && intval($_GET['id_project_to'])>0
+            && intval($_GET['id_project_from'])!=intval($_GET['id_project_to'])){
         $id_project_from = intval($_GET['id_project_from']);
         $id_project_to = intval($_GET['id_project_to']);
         // == load times from both projects
@@ -37,6 +38,18 @@
                     DB_multiple_update(array('q'=>$to_edit));
                 }
             
+        // == merge 'projects' records
+            $from_project = DB_get_first_record(array('t'=>'projects', 'w'=>array(array('_id_','=',$id_project_from))));
+            $to_project = DB_get_first_record(array('t'=>'projects', 'w'=>array(array('_id_','=',$id_project_to))));
+            $v = array(
+                't_creation' => min(array($from_project['t_creation'],$to_project['t_creation'])),
+                'n_today_time' => intval($from_project['n_today_time']) + intval($to_project['n_today_time']),
+                'n_init_time' => intval($from_project['n_init_time']) + intval($to_project['n_init_time']),
+                'd_first' => min(array($from_project['d_first'],$to_project['d_first'])),
+                'd_last' => max(array($from_project['d_last'],$to_project['d_last'])),
+            );
+            DB_update_by_ID(array('t'=>'projects', 'id'=>$id_project_to, 'v'=>$v));
+                
         // == delete the id_project_from times and project record
             DB_delete(array('t'=>'times', 'w'=>array(array('id_project','=',$id_project_from))));
             DB_delete_by_ID(array('t'=>'projects', 'id'=>$id_project_from));
