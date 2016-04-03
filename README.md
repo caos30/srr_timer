@@ -136,5 +136,6 @@ As developers & translators:
  - added the number of version at the 'settings' dialog, which it's stored at /version.txt file by developers
  - refactoring of the database layer
  - fixed an error when title of task contain a latin character
+ - finished the development of the feature to MERGE 2 tasks and its times
 
 More details at: https://github.com/caos30/srr_timer/commits/master

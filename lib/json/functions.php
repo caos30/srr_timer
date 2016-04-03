@@ -160,7 +160,7 @@ function f_get_times_project($id){
 	$a_project['months'] = array();
 	$a_project['years'] = array();
 	$last_time = 0;
-	$a_times = DB_select(array('t'=>'times', 'w'=>array(array('id_project','=',$id)))); 
+	$a_times = DB_select(array('t'=>'times', 'w'=>array(array('id_project','=',$id)), 'o'=>'d_yyyymmdd')); 
 	if (count($a_times)>0 and is_array($a_times)){
 		foreach ($a_times as $time){ 			
 			$monthk = substr($time['d_yyyymmdd'],0,6);

@@ -159,6 +159,17 @@ function DB_update_by_ID($vars){
 	$db->CLOSE();
         return $ret;
 }
+/*
+ * required params: m (module String), q (queries array, each one must contain a valid DB_UPDATE $vars)
+ */
+function DB_multiple_update($vars){
+        if (empty($vars['q']) || !is_array($vars['q']) || count($vars['q'])==0) return false;
+        $vars = _DB_fill_db($vars);
+        $db = new class_aSQLite($vars['db']);
+	$ret = $db->MULTIPLE_UPDATE($vars['q']); 
+	$db->CLOSE();
+        return $ret;
+}
 
 /*
  * required params: t (table String), v (values Array), id (integer)
