@@ -12,9 +12,9 @@ class class_aSQLite {
    # internal variables
    # starting from here the following vars should not be changed from
    #
-   var $version = '2.4';
+   var $version = '2.7';
    var $email_admin = 'info@imasdeweb.com';
-   var $db_filename = 'timer.sqlite';
+   var $db_filename = 'barllo.sqlite';
    var $db_path = '';
    var $tablas = array();
    var $records = array();
@@ -36,9 +36,8 @@ class class_aSQLite {
    
    #
    ####################################################################eof internal
-   // == constructor method
 
-   function class_aSQLite($a_location='') {
+   function __construct($a_location='') {
       // == physical location of the directory containing data 
       if (is_array($a_location) && isset($a_location['db_path'])) {
          $path = trim($a_location['db_path']);
@@ -59,7 +58,10 @@ class class_aSQLite {
             $this->db_filename = $database_filename;
       }
       // == connect with database
-      if (!$this->CONNECT_DATABASE()) throw new Exception('class_aSQLite error: Could not connect with database '.$this->db_filename);
+      if (!$this->CONNECT_DATABASE()){
+          echo 'class_aSQLite error: Could not connect with database '.$this->db_path.$this->db_filename;
+          return;
+      }
    }
 
 // EXTERNAL functions **********************************************************************
@@ -192,6 +194,15 @@ class class_aSQLite {
       $this->INSERT_MULTIPLE($new_table_name, $a_rows);
       // == reload the tables list
       $this->load_table_list();
+      return true;
+   }
+
+   function DUPLICATE_DATABASE() { 
+      $db_file = $this->db_path.$this->db_filename;
+      if (!file_exists($db_file)) return false;
+      $a_path = pathinfo($db_file);
+      $backup_file = $a_path['dirname'].'/'.$a_path['filename'].'_'.date('Y-m-d_H-i-s').'.sqlite';
+      @copy($db_file,$backup_file);
       return true;
    }
 
@@ -453,15 +464,17 @@ class class_aSQLite {
       return $record;
    }
 
-   function GET_BY_ID_IN($table_name = '', $id = '') { // return the set of records with their ID included in the array passed as $id
+   function GET_BY_ID_IN($table_name = '', $id = '', $k_id = '_id_') { // return the set of records with their ID included in the array passed as $id
       if (empty($id) || !is_array($id) || count($id)==0 || !$this->table_exist($table_name))
          return false;
+      /* the array $id must pass integer IDs... so as redundant safety measure we convert its values to integer */
       $IN = array();
       foreach($id as $v){
           $v = intval($v);
           if ($v>0) $IN[] = $v;
       }
-      $sql = 'SELECT * FROM "' . $table_name . '" WHERE '.$this->qf('_id_').' IN ('.implode(',',$IN).')';
+      if (f_trim($k_id)=='') $k_id = '_id_';
+      $sql = 'SELECT * FROM "' . $table_name . '" WHERE '.$this->qf($k_id).' IN ('.implode(',',$IN).')';
       $sth = $this->_prepare($sql);
       $sth->setFetchMode(PDO::FETCH_ASSOC);
       $sth->execute();
@@ -479,6 +492,7 @@ class class_aSQLite {
 
    function SELECT($vars) { // $vars=array('t'=>'table_name','f'=>'count(_id_) as n, sum(money) as s', 'w'=>array('name'=>'pepe', 'password'=>'333'),
                             // 'l1'=>10,'l2'=>20,'k'=>'_id_','o'=>'age','o2'=>'ASC', 'g'=>'country')
+
       $mc0 = $this->_microtime(); 
       if (!$this->table_exist($vars['t']))
          return false;
@@ -559,7 +573,9 @@ class class_aSQLite {
    }
 
    function CLOSE() {
-      @fclose($this->fp_busy);
+      if (!empty($this->fp_busy) && file_exists($this->fp_busy)){
+          @fclose($this->fp_busy);
+      }
       return;
    }
 
@@ -886,7 +902,7 @@ class class_aSQLite {
       }else {
          $_op_ = '';
       }
-      //echo '<hr /><h2>op= '.$_op_.'</h2><h2>'.var_export($a_params,true).'</h2>';
+        //echo '<hr /><h2>op= '.$_op_.'</h2><h2>'.var_export($a_params,true).'</h2>';
       return array($_op_,$a_params);
    }
  
@@ -931,7 +947,7 @@ class class_aSQLite {
       $param = array();
       $op = trim($op);
       $opc = str_replace('|','',$op); // we CLEAN the operator
-      $a_comparators = array('=' => ' = ', '!=' => ' != ', '>' => ' > ', '<' => ' < ', '>=' => ' >= ', '<=' => ' <= ');
+      $a_comparators = array('=' => ' = ', '>' => ' > ', '<' => ' < ', '>=' => ' >= ', '<=' => ' <= ');
       $v1 = trim($v1);
       
       // special case: fieldname = *

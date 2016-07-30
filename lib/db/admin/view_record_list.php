@@ -6,14 +6,21 @@
                 [ <a href='index.php' style='font-weight:normal;'>back to the list of tables</a> ]
                 <br /><br />
                 Records of this table:
-                <span style='color:#c40000;letter-spacing:0.2em;font-weight:normal;'> <?= $table['nombre'] ?></span> (<?= $table['total_records'] ?>)
+                <span style='color:#c40000;letter-spacing:0.2em;font-weight:normal;'> <?= $table['nombre'] ?></span> (<?= number_format(intval($table['total_records']),0,'.',',') ?>)
             </b>
             &nbsp; &nbsp; &nbsp; [ <a href="#" onclick="js_trim_asked(); return false;" title="Trim blank spaces that they appear usually when importing data from OLD database version">trim blank spaces</a> ]
             <script>
                 function js_trim_asked(){
                     document.location = 'index.php?pag=records&op1=trim&table_name=<?= $table['nombre'] ?>';
                 }
+                $(document).ready(function(){
+                    $('#input_current_page').bind('change',function(){
+                        if ($(this).val()=='') return;
+                        document.location = 'index.php?pag=records&table_name=<?= $table['nombre'] ?>&k_order=<?= $k_order ?>&i_page='+$(this).val();
+                    });
+                });
             </script>
+            <?= _var_export($_POST) ?>
         </td>
     </tr>
     
@@ -124,12 +131,72 @@
                             <thead>
                                 <tr>
                                     <td style='width:30px;'><b>Pages</b></td><td>
-                                        <?php for ($ii = 1; $ii < ($n_pages + 1); $ii++) { ?>
+                                        <?php $block_size = 5; ?>
+                                        
+                                        <?php if ($i_page < ($block_size + 4)){ ?>
+                                        
+                                        <!-- first 5 ($block_size) pages -->
+                                            <?php for ($ii = 1; $ii < $i_page; $ii++) { ?>
+                                                <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                    title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                                 ><?= $ii ?></a>
+                                            <?php } ?>
+
+                                        <?php }else{ ?>
+                                        
+                                            <?php for ($ii = 1; $ii < $block_size; $ii++) { ?>
+                                                <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                    title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                                 ><?= $ii ?></a>
+                                            <?php } ?>
+                                            <span color="white">...</span>
+                                        
+                                        <!-- 2 pages at left of current page -->
+                                            <?php $ii = $i_page - 2; ?>
                                             <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
-                                                title="page <?= $ii ?>" 
-                                                class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                                title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
                                              ><?= $ii ?></a>
+                                            <?php $ii = $i_page - 1; ?>
+                                            <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                             ><?= $ii ?></a>
+
                                         <?php } ?>
+                                            
+                                        <!-- current page (as input type=text) -->
+                                             <input id="input_current_page" type="text" class="a_c" style="width:50px;border-radius:3px;" value="<?= $i_page ?>" />
+                                             
+                                        <?php if ($i_page > ($n_pages - $block_size - 4)){ ?>
+                                             
+                                            <?php for ($ii = ($i_page + 1); $ii < ($n_pages + 1); $ii++) { ?>
+                                                <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                    title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                                 ><?= $ii ?></a>
+                                            <?php } ?>
+                                             
+                                        <?php }else{ ?>
+                                             
+                                        <!-- 2 pages at right of current page -->
+                                            <?php $ii = $i_page + 1; ?>
+                                            <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                             ><?= $ii ?></a>
+                                            <?php $ii = $i_page + 2; ?>
+                                            <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                             ><?= $ii ?></a>
+
+                                             <span color="white">...</span>
+                                             
+                                        <!-- last 5 ($block_size) pages -->
+                                            <?php for ($ii = ($n_pages - $block_size +2); $ii < ($n_pages + 1); $ii++) { ?>
+                                                <a href="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=<?= $ii ?>&k_order=<?= $k_order ?>" 
+                                                    title="page <?= $ii ?>" class="<?= ($ii == $i_page) ? 'page_selected' : 'page_clickable' ?>"
+                                                 ><?= $ii ?></a>
+                                            <?php } ?>
+                                        
+                                        <?php } ?>
+                                        
                                     </td>
                                     <td style='width:30px;'>
                                         <form id='form_ele_per_page' action="index.php?pag=records&table_name=<?= $table['nombre'] ?>&i_page=1&k_order=<?= $k_order ?>" method='post'>

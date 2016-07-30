@@ -29,8 +29,9 @@
 			<tr>
 				<td style="border:none;" colspan="2"><span id="current_date"></span></td>
 				<td style="width:60px;" class="a_c TEXT" rel="TODAY"></td>
-				<td style="width:60px;" class="a_c TEXT" rel="ALL">
+				<td style="width:60px;" class="a_c">
 					<a href='#' onclick='js_stats_button("0");return false;'><i class='fa fa-area-chart'></i></a>
+                                        <span class="TEXT" rel="ALL"></span>
 				</td>
 				<td style="width:60px;" class="a_c TEXT" rel="DAYS"></td>
 			</tr>
@@ -120,7 +121,7 @@
 
 <div id="div_stats" class='modal' rel="">
 	<div class="top_bar"><a href="#" class="close"><i class='fa fa-close'></i></a></div> 
-	<p><span class="TEXT" rel="TASK_NAME"></span>: <span id="v_statistics_task_name" style="font-weight:bold;"></span></p>
+	<p id="div_stats_task_name"><span class="TEXT" rel="TASK_NAME"></span>: <span id="v_statistics_task_name" style="font-weight:bold;"></span></p>
 	<div id="div_stats_menu">
             <a href="#" rel="days" class="bt"><i class="fa fa-calendar"></i> <span class="TEXT" rel="DAYS"></span></a> 
             <a href="#" rel="months" class="bt"><i class="fa fa-calendar-check-o"></i> <span class="TEXT" rel="MONTHS"></span></a> 

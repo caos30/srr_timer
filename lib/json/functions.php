@@ -160,9 +160,15 @@ function f_get_times_project($id){
 	$a_project['months'] = array();
 	$a_project['years'] = array();
 	$last_time = 0;
-	$a_times = DB_select(array('t'=>'times', 'w'=>array(array('id_project','=',$id)), 'o'=>'d_yyyymmdd')); 
+        if ($id=='0')
+            $a_times = DB_select(array('t'=>'times', 'o'=>'d_yyyymmdd')); 
+        else
+            $a_times = DB_select(array('t'=>'times', 'w'=>array(array('id_project','=',$id)), 'o'=>'d_yyyymmdd')); 
         // = add today times if there exists
-            $project = DB_get_first_record(array('t'=>'projects', 'w'=>array(array('_id_','=',$id))));
+            if ($id=='0')
+                $project = DB_get_first_record(array('t'=>'projects', 'w'=>array()));
+            else
+                $project = DB_get_first_record(array('t'=>'projects', 'w'=>array(array('_id_','=',$id))));
             if (!empty($project['n_today_time'])){
                 $Ymd = $config['today']; // YYYYmmdd
                 $t_today = mktime(1,1,1,substr($Ymd,4,2),substr($Ymd,-2),substr($Ymd,0,4));
@@ -185,7 +191,10 @@ function f_get_times_project($id){
 			$a_project['years'][$yeark]['t'] += $n_time;
 			if ($a_project['months'][$monthk]['t']>$a_project['max_time_month']) $a_project['max_time_month'] = $a_project['months'][$monthk]['t'];
 			if ($a_project['years'][$yeark]['t']>$a_project['max_time_year']) $a_project['max_time_year'] = $a_project['years'][$yeark]['t'];
-			$a_project['times'][]=array('d'=>$n_date,'t'=>$n_time);
+                        if (!isset($a_project['times'][$n_date]))
+                            $a_project['times'][$n_date] = array('d'=>$n_date,'t'=>$n_time);
+                        else
+                            $a_project['times'][$n_date]['t'] += $n_time;
 			if ($n_time>$a_project['max_time_day']) $a_project['max_time_day'] = $n_time;
 			$a_project['num_times']++;
 			$a_project['total_time'] += $n_time;

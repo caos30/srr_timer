@@ -138,4 +138,8 @@ As developers & translators:
  - fixed an error when title of task contain a latin character
  - finished the development of the feature to MERGE 2 tasks and its times
 
+== 2.3 [30-07-2016]
+
+ - added a button for render statistics of time but for the sum of all the projects, so now we can know how many time we worked by day/month/year.
+
 More details at: https://github.com/caos30/srr_timer/commits/master

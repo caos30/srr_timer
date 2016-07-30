@@ -58,9 +58,11 @@ input,textarea{border:1px #ccc solid;background-color:#ffe;color:#222;}
 .a_l{text-align:left;}
 .a_r{text-align:right;}
 
+.clear{float:none; clear:both;}
+
 #header_wrapper{ 
     position:relative;
-    border-bottom:1px #abb8c5 solid;
+    padding-bottom:1rem;border-bottom:1px #abb8c5 solid;
     font-weight:bold;
     padding-left:11px;margin-right:21px;
 }
@@ -86,7 +88,7 @@ input,textarea{border:1px #ccc solid;background-color:#ffe;color:#222;}
 #header_wrapper ul a:hover{
     box-shadow: 0px 0px 4px #999;
 }
-#content{
+#content, .block{
     padding:11px;margin:0px auto;color:#444;
     border:1px #abb8c5 solid;
     border-radius: 3px;
@@ -115,9 +117,13 @@ input,textarea{border:1px #ccc solid;background-color:#ffe;color:#222;}
     border:1px #9ca8b4 solid;
     border-radius:3px;
 }
+    #content table td{
+        padding:2px 4px;
+    }
 #content table thead td {
     background-color: #222;
     color:#eee;
+    padding:8px 6px;
 }
 #content table thead td a{
     color:#edf6fb;
@@ -154,3 +160,16 @@ input,textarea{border:1px #ccc solid;background-color:#ffe;color:#222;}
 #content table tr.tr_odd td{
     background-color: #edf6fb;
 }
+
+.error_div{
+    background-color:#c40000; color:#eee; border-radius:3px;
+    margin:1rem; padding:0.5rem 1rem;
+    font-weight:bold;
+}
+
+.maximized{
+    position:absolute; top:0; left:0; width: 100%; height: 100%; z-index:11;background-color:white;
+}
+.ic-arrow{ color:black; background-color:#ee5;display:inline-block;padding:2px;border-radius:2px;width:1em;height:1em;}
+
+.tb_records td{vertical-align:middle;}

@@ -11,8 +11,10 @@
         <div id="header_wrapper">
             <div style='float:right;right:0px;'>
                 <ul style='margin:0px;'>
+                    <!--
                     <li><a href='http://imasdeweb.indefero.net/p/class-SRR-database-sim/doc' target='_blank'>Official documentation</a></li>
                     <li><a href='http://imasdeweb.com/opensource/php_SRR_database_sim/demo/' target='_blank'>Last version & demo</a></li>
+                    -->
                     <li><a href='index.php?pag=logout'>Logout</a></li>
                 </ul>
             </div>
@@ -20,7 +22,7 @@
                 <h1><?= $config['page_title'] ?> <?= $db->version ?></h1>
                 <form id="form_change_db" action="index.php">
                     <?php $path = str_replace('../','',$config['db_path']) ?>
-                    <span>Database: &nbsp; 
+                    <p style='margin-bottom:0;'>Database: &nbsp; 
                     <select class="a_c" name="db_filename" onchange="$('#bt_change_db').fadeIn()">
                         <?php $db_files = c_db_available_list() ?>
                         <?php foreach ($db_files as $dbf){ ?>
@@ -30,13 +32,20 @@
                         <?php }?>
                     </select>
                     <a id="bt_change_db" href="#" onclick="$('#form_change_db').submit();" style="display:none;"> &larr; click for load it</a>
+                    </p>
                 </form>
 
             </div>
             <div style='float:none;clear:both;'></div>
         </div>
-        <div style='color:#c40000'><?= isset($error_msg) ? $error_msg : '' ?><br /></div>
+        
+        <?php if(isset($error_msg) && trim($error_msg)!=''){ ?>
+            <div class='error_div'><?= $error_msg ?></div>
+        <?php } ?>
+            
         <?= $body ?>
+            
         <?= c_test() ?>
+            
     </body>
 </html>
