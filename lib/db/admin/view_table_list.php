@@ -4,7 +4,7 @@
             <b>Tables' list</b>
             &nbsp; &nbsp; <b>[</b> <a href="index.php?op1=vacuum" title="This action will remove not used physical space in the database file">VACUUM database</a> <b>]</b>
             <?php if ($op1 != 'edit_table'){ ?>
-            &nbsp; &nbsp; <b>[</b> <a href="#" onclick="$('#edit_table_form').toggle();return false;">Add new table</a> <b>]</b>
+            &nbsp; &nbsp; <b>[</b> <a href="#" onclick="$('#edit_table_wrapper').toggle();return false;">Add new table</a> <b>]</b>
             <?php } ?>
         </td>
     </tr>
@@ -13,8 +13,8 @@
             <table id='content'>
                 <tr>
                     <td>
-                        <div id='edit_table_form' style="<?= $op1 == 'edit_table' ? '':'display:none;' ?>">
-                            <form method='post' action='index.php'>
+                        <div id='edit_table_wrapper' style="<?= $op1 == 'edit_table' ? '':'display:none;' ?>">
+                            <form id='edit_table_form' method='post' action='index.php'>
                                 <input type='hidden' name='op1' value='save_table'>
                                 <input type='hidden' name='table_name' value="<?= !empty($_GET['table_name']) ? $_GET['table_name'] : '' ?>">
                                 <table style="width:100%;">
@@ -37,7 +37,7 @@
                                                 <p style='margin:0.5rem;text-align:center;'><textarea name='fields' style="width:90%;margin:5px auto;height:80px;"><?= isset($editable_table['lista_campos']) ? implode(" ", $editable_table['lista_campos']) : '' ?></textarea></p>
 
                                                 <br />
-                                                <a href="#" class='bt' onclick="document.getElementById('edit_table_form').submit();"><?= ($op1 == 'edit_table') ? 'Save changes':'Add table' ?></a> &nbsp;
+                                                <a href="#" class='bt' onclick="$('#edit_table_form').submit();"><?= ($op1 == 'edit_table') ? 'Save changes':'Add table' ?></a> &nbsp;
                                                 <a href="#" class='bt' onclick="js_import_db_click();return false;">Import SQLite db</a><br />
                                                 <script>
                                                     function js_import_db_click(){

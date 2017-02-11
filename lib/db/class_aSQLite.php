@@ -12,7 +12,7 @@ class class_aSQLite {
    # internal variables
    # starting from here the following vars should not be changed from
    #
-   var $version = '2.7';
+   var $version = '2.8';
    var $email_admin = 'info@imasdeweb.com';
    var $db_filename = 'barllo.sqlite';
    var $db_path = '';
@@ -228,7 +228,7 @@ class class_aSQLite {
       return true;
    }
 
-   function UPDATE_TABLE_FIELDS($table_name, $a_fields) { // @@@ unfinished @@@
+   function UPDATE_TABLE_FIELDS($table_name, $a_fields) {
       // this function recreate the specified table to the new structure: 
       // is possible to delete fields, create new fields, or resort the existing fields
       if (!$this->table_exist($table_name) || !is_array($a_fields) || count($a_fields)==0)
@@ -242,14 +242,26 @@ class class_aSQLite {
       }
 
       // == create the new table structure
-      $temporal_name = $table_name . '_' . date('Ymd_His');
+      $temporal_name = $table_name . '_temp_' . date('Ymd_His').'_'.rand();
       $this->CREATE_TABLE($temporal_name, $a_new_fields);
 
-      // == load the actual content
-      $a_records = $this->SELECT(array('t'=>$table_name));
-      
-      // == populate the new table with the old table records (by packs? ...mmm at the moment all in one step)
-      $this->MULTIPLE_INSERT(array('t'=>$temporal_name,'v'=>$a_records));
+      // == populate the new table with the records of the old table
+      // == we run it in batches (10,000 records by batch) to avoid crash for RAM exceeded
+      $continue = true;
+      $l1 = 1; $ll = 10000;
+      while ($continue){
+        // == load the actual content and 
+            $a_records = $this->SELECT(array('t'=>$table_name, 'l1'=>$l1, 'l2'=>($l1 + $ll)));
+            if (is_array($a_records) && count($a_records)>0){
+                // == populate the new table with the old table records
+                    $this->MULTIPLE_INSERT(array('t'=>$temporal_name,'v'=>$a_records));
+                    unset($a_records);
+                // == next batch
+                    $l1 += $ll + 1;
+            }else{
+                $continue = false;
+            }
+      }
       
       // == delete the original table and rename the new table
       $this->DELETE_TABLE($table_name);
@@ -908,36 +920,57 @@ class class_aSQLite {
  
    function prepare_order($vars){
         $ORDER = '';
-        if (isset($vars['o']) && trim($vars['o'])!=''){
-            $ex = explode('[',$vars['o']);
-            $f = $this->qf(trim($ex[0]));
-            if(preg_match('/^_id_/i',$vars['o'])){
-                $ORDER .= ' ORDER BY '.$f.' ';
-            }else if (strpos($vars['o'], '[')!==false){
-                $ex[1] = trim($ex[1]);
-                if ($ex[1] == 's' || $ex[1] == 'si') { // string insensitive
-                   $ORDER .= ' ORDER BY UPPER('.$f.') ';
-                } else if ($ex[1] == 'ss') { //String Sensitive to capital letters
-                   $ORDER .= ' ORDER BY '.$f.' ';
-                } else if ($ex[1] == 'n') { // integer without decimals and without thousands commas
-                   $ORDER .= ' ORDER BY CAST('.$f.' as integer)';
-                } else if ($ex[1] == 'n,.') { // numbers with "," for thousands and "." for decimals 
-                   $ORDER = ' ORDER BY CAST(REPLACE('.$f.',",","") as real)';
-                }else if ($ex[1] == 'n.,') { // numbers with "." for thousands and "," for decimals 
-                   $ORDER = ' ORDER BY CAST(REPLACE(REPLACE('.$f.',".",""),",",".") as real)';
-                }else if ($ex[1] == 'ddmmyy') { // dd/mm/yy or dd-mm-yy  or dd/mm/yy hh:ii....
-                   $ORDER = ' ORDER BY ( SUBSTR('.$f.',7,2) || SUBSTR('.$f.',4,2) || SUBSTR('.$f.',1,2) || SUBSTR('.$f.',9) )';
-                }else if ($ex[1] == 'ddmmyyyy') { // dd/mm/yyyy or dd-mm-yyyy or dd/mm/yyyy hh:ii....
-                   $ORDER = ' ORDER BY ( SUBSTR('.$f.',7,4) || SUBSTR('.$f.',4,2) || SUBSTR('.$f.',1,2) || SUBSTR('.$f.',11) )';
-                }else {
-                    $ORDER .= ' ORDER BY UPPER('.$f.') ';
+        // == prepare direction(s) of order
+            $direction = array();
+            if (isset($vars['o2']) && trim($vars['o2'])!=''){
+                $fields = explode(',',$vars['o2']); // ex: DESC , ASC , DESC
+                foreach ($fields as $idf=>$dir){
+                    $dir = strtoupper(trim($dir));
+                    if (trim($dir)=='ASC') 
+                        $direction[$idf] = $dir;
+                    else
+                        $direction[$idf] = 'DESC';
                 }
-            }else{
-                $ORDER .= ' ORDER BY UPPER('.$this->qf(trim($vars['o'])).') ';
             }
-            if (!empty($ORDER))
-            $ORDER .= (isset($vars['o2']) && trim($vars['o2'])=='DESC') ? ' DESC' : ' ASC';
-        }
+        // == prepare field(s) of order
+            if (isset($vars['o']) && trim($vars['o'])!=''){
+                $fields = explode(',',$vars['o']); // ex: date[ddmmyyyy , _id_
+                $order = array();
+                foreach ($fields as $idf=>$field){
+                    $field = trim($field);
+                    $ex = explode('[',$field);
+                    if ($ex[0]=='') continue;
+                    $ftit = $this->qf($ex[0]);
+                    if(preg_match('/^_id_/i',$ex[0])){
+                        $ORDER = $ftit;
+                    }else if (!empty($ex[1])){
+                        if ($ex[1] == 's' || $ex[1] == 'si') { // string insensitive
+                           $ORDER = 'UPPER('.$ftit.')';
+                        } else if ($ex[1] == 'ss') { //String Sensitive to capital letters
+                           $ORDER = $ftit;
+                        } else if ($ex[1] == 'n') { // integer without decimals and without thousands commas
+                           $ORDER = 'CAST('.$ftit.' as integer)';
+                        } else if ($ex[1] == 'n,.') { // numbers with "," for thousands and "." for decimals 
+                           $ORDER = 'CAST(REPLACE('.$ftit.',",","") as real)';
+                        }else if ($ex[1] == 'n.,') { // numbers with "." for thousands and "," for decimals 
+                           $ORDER = 'CAST(REPLACE(REPLACE('.$ftit.',".",""),",",".") as real)';
+                        }else if ($ex[1] == 'ddmmyy') { // dd/mm/yy or dd-mm-yy  or dd/mm/yy hh:ii....
+                           $ORDER = '( SUBSTR('.$ftit.',7,2) || SUBSTR('.$ftit.',4,2) || SUBSTR('.$ftit.',1,2) || SUBSTR('.$ftit.',9) )';
+                        }else if ($ex[1] == 'ddmmyyyy') { // dd/mm/yyyy or dd-mm-yyyy or dd/mm/yyyy hh:ii....
+                           $ORDER = '( SUBSTR('.$ftit.',7,4) || SUBSTR('.$ftit.',4,2) || SUBSTR('.$ftit.',1,2) || SUBSTR('.$ftit.',11) )';
+                        }else {
+                            $ORDER = 'UPPER('.$ftit.') ';
+                        }
+                    }else{
+                        $ORDER = 'UPPER('.$ftit.')';
+                    }
+                    if (!empty($ORDER) && !empty($direction[$idf]))
+                        $order[] = $ORDER .' '.$direction[$idf];
+                    else
+                        $order[] = $ORDER .' '.( !empty($direction[0]) ? $direction[0] : 'DESC');
+                }
+                if (count($order)>0) $ORDER = ' ORDER BY ' . implode(' , ',$order);
+            }
         return $ORDER;
    }
    

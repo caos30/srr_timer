@@ -142,4 +142,9 @@ As developers & translators:
 
  - added a button for render statistics of time but for the sum of all the projects, so now we can know how many time we worked by day/month/year.
 
+== 2.4 [11-02-2017]
+
+ - modified a deprecated constructor of the main class, to be compatible with PHP 7.0
+ - upgraded the db class php_aSQLite to its last version
+
 More details at: https://github.com/caos30/srr_timer/commits/master

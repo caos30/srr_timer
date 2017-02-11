@@ -20,7 +20,6 @@
                     });
                 });
             </script>
-            <?= _var_export($_POST) ?>
         </td>
     </tr>
     
@@ -214,7 +213,6 @@
                         
                         
                         <!-- ====== ====== ====== RESULTS TABLE ====== ====== ====== -->
-                        <style>.tb_records td{vertical-align:middle;}</style>
                         <table class='tb_records' border='0' cellpadding='5'>
                             <thead>
                                 <tr>

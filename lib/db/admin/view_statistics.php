@@ -33,12 +33,6 @@
             <table id='content' style="position:relative;width:100%;">
                 <tr>
                     <td style='text-align:center;'>
-                        <style>
-                            .maximized{
-                                position:absolute; top:0; left:0; width: 100%; height: 100%; z-index:11;background-color:white;
-                            }
-                            .ic-arrow{ color:black; background-color:#ee5;display:inline-block;padding:2px;border-radius:2px;width:1em;height:1em;}
-                        </style>
                         <script>
                             function js_maximize(div_id){
                                 if ($('#'+div_id).hasClass('maximized')){

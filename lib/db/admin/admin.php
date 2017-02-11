@@ -201,12 +201,13 @@ $table_name = !empty($_REQUEST['table_name']) ? trim($_REQUEST['table_name']) : 
                         $data = trim($_REQUEST['f_' . trim($campo)]);
                         // == apply a recalculation of string length if it seems to be a serializated value
                         // == why? because when the strings contained in a serializated array contain htmlentities or accented vowels the serializated crash!! :o
-                        if (preg_match('/:{/',$data)){
-                            $data = preg_replace_callback('/s:(\d+):"(.*?)";/', function($m){ return "s:".strlen($m[2]).":\"".$m[2]."\";";}, $data);
-                            //echo '<h5>'.$campo.'</h5>'.$_REQUEST['f_' . trim($campo)].'<br />'.$data;
+                        $reg = '/s:(\d+):"(.*?)";/';
+                        if (preg_match($reg,$data)){ 
+                            $data = preg_replace_callback($reg, '_preg_replace_callback', $data);
                         }
-                        if (trim($campo) != "")
-                           $valores_a[trim($campo)] = $data;
+                        if (trim($campo) != ""){
+                            $valores_a[trim($campo)] = $data;
+                        }
                      }
                      if (!empty($_REQUEST['id_record'])){
                          $database->UPDATE_RECORD($table_name, array('_id_' => $_REQUEST['id_record']), $valores_a);
@@ -437,7 +438,8 @@ $table_name = !empty($_REQUEST['table_name']) ? trim($_REQUEST['table_name']) : 
                          if (trim($_GET['table_name']) == trim($arr['nombre'])) $editable_table = $arr;
                      }
                   }
-
+                  ksort($tables);
+                  
               // == render
                 $body = c_render_view('table_list',array('tables'=>$tables, 'op1'=>$op1, 'editable_table'=>$editable_table));
                 $html = c_render_view('layout',array('body'=>$body, 'db'=>$database, 'config'=>$config, 'error_msg'=>$error_msg));
@@ -726,5 +728,9 @@ $table_name = !empty($_REQUEST['table_name']) ? trim($_REQUEST['table_name']) : 
         else $ret=number_format($bytes/(1024*1024*1024),1).'Gb';
         return $ret;
     }    
+
+    function _preg_replace_callback($matches){
+           return "s:".strlen($matches[2]).":\"".$matches[2]."\";";
+     }  
     
 ?>
